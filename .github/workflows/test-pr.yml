@@ -8,7 +8,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   code-quality-checks:
     name: 'Code Quality Checks'
     runs-on: ubuntu-latest
@@ -25,7 +24,16 @@ jobs:
   test-pr:
     name: 'Build and test Blockchain Plugin'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
+      - uses: docker/login-action@v3
+        name: Login to GitHub Container Registry
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Check out code'
         uses: actions/checkout@v3
         with:
@@ -34,7 +42,6 @@ jobs:
         uses: ./.github/actions/with-docker
         with:
           tag: blockchain-k-plugin-concrete-${{ github.sha }}
-          distro: jammy
           llvm-version: 16
       - name: 'Compile Deps'
         run: docker exec -t blockchain-k-plugin-concrete-${GITHUB_SHA} /bin/bash -c 'make -j`nproc` CXX=clang++-16 libff libcryptopp c-kzg-4844'

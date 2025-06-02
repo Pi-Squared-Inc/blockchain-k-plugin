@@ -1,8 +1,5 @@
-ARG BASE_IMAGE
 ARG K_VERSION
 
-ARG BASE_IMAGE
-ARG K_VERSION
 # Use the prebuilt base image with the specified version
 FROM  ghcr.io/pi-squared-inc/ulm-k:ubuntu-jammy-${K_VERSION}
 

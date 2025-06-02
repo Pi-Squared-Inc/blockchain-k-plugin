@@ -8,9 +8,7 @@ inputs:
     description: 'Subdirectory where code is cloned.'
     required: false
     default:
-  distro:
-    description: 'Distribution to setup Docker for.'
-    required: true
+    type: string
   llvm-version:
     description: 'LLVM version to use.'
     required: true
@@ -22,7 +20,6 @@ runs:
     env:
       TAG_NAME: ${{ inputs.tag }}
       SUBDIR: ${{ inputs.subdir }}
-      BASE_IMAGE: ${{ inputs.distro }}
       LLVM_VERSION: ${{ inputs.llvm-version }}
     run: |
       set -euxo pipefail
@@ -30,8 +27,7 @@ runs:
       K_VERSION=$(cat ${SUBDIR}deps/k_release)
 
       docker build . --file ${SUBDIR}.github/workflows/Dockerfile    \
-          --tag pi2/${TAG_NAME}                      \
-          --build-arg BASE_IMAGE=${BASE_IMAGE}                       \
+          --tag pi2/${TAG_NAME}                                      \
           --build-arg LLVM_VERSION=${LLVM_VERSION}                   \
           --build-arg K_VERSION=${K_VERSION}                         \
           --build-arg USER=$(id -un) --build-arg USER_ID=$(id -u)    \
