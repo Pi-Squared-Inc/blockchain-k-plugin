@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       - name: 'Configure GitHub user'
         run: |
@@ -26,25 +26,12 @@ jobs:
           git config user.email devops@runtimeverification.com
       - name: 'Install Poetry'
         uses: Gr1N/setup-poetry@v9
-      - name: 'Install Nix'
-        uses: cachix/install-nix-action@v22
-        with:
-          install_url: https://releases.nixos.org/nix/nix-2.13.3/install
-          extra_nix_config: |
-            substituters = http://cache.nixos.org https://hydra.iohk.io
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
       - name: 'Update pyk release tag'
         run: |
           K_VERSION=$(cat deps/k_release)
           sed -i 's!kframework = "[0-9\.]*"!kframework = "'${K_VERSION}'"!' krypto/pyproject.toml
           poetry -C krypto update
           git add krypto/ && git commit -m "krypto/: sync poetry files pyk version ${K_VERSION}" || true
-      - name: 'Update Nix flake inputs'
-        run: |
-          K_VERSION=v"$(cat deps/k_release)"
-          sed -i 's!    k-framework.url = "github:runtimeverification/k/v[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+"!    k-framework.url = "github:runtimeverification/k/'"${K_VERSION}"'"!' flake.nix
-          nix flake update
-          git add flake.nix flake.lock && git commit -m 'flake.{nix,lock}: update Nix derivations' || true
 
       - name: 'Push updates'
         run: git push
