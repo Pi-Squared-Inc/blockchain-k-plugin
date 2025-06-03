@@ -8,9 +8,7 @@ inputs:
     description: 'Subdirectory where code is cloned.'
     required: false
     default:
-  distro:
-    description: 'Distribution to setup Docker for.'
-    required: true
+    type: string
   llvm-version:
     description: 'LLVM version to use.'
     required: true
@@ -22,18 +20,14 @@ runs:
     env:
       TAG_NAME: ${{ inputs.tag }}
       SUBDIR: ${{ inputs.subdir }}
-      BASE_IMAGE: ${{ inputs.distro }}
       LLVM_VERSION: ${{ inputs.llvm-version }}
     run: |
       set -euxo pipefail
 
       K_VERSION=$(cat ${SUBDIR}deps/k_release)
-      Z3_VERSION=$(cat ${SUBDIR}deps/z3_version)
 
       docker build . --file ${SUBDIR}.github/workflows/Dockerfile    \
-          --tag runtimeverification/${TAG_NAME}                      \
-          --build-arg BASE_IMAGE=${BASE_IMAGE}                       \
-          --build-arg Z3_VERSION=${Z3_VERSION}                       \
+          --tag pi2/${TAG_NAME}                                      \
           --build-arg LLVM_VERSION=${LLVM_VERSION}                   \
           --build-arg K_VERSION=${K_VERSION}                         \
           --build-arg USER=$(id -un) --build-arg USER_ID=$(id -u)    \
@@ -48,4 +42,4 @@ runs:
           -v "$(pwd):/opt/workspace"         \
           -v "/etc/passwd:/etc/passwd:ro"    \
           -v "/etc/group:/etc/group:ro"      \
-          runtimeverification/${TAG_NAME}
+          pi2/${TAG_NAME}
