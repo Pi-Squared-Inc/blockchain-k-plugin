@@ -26,8 +26,12 @@ def _source_dir() -> Path:
 
 def _library_path() -> Path:
     return Path(os.environ.get(K_PLUGIN_ROOT, BUILD_DIR)) / 'krypto/lib/krypto.a'
+
+
 def _czkg_object_path() -> Path:
     return Path(os.environ.get(K_PLUGIN_ROOT, BUILD_DIR)) / 'c-kzg-4844/lib/libckzg.o'
+
+
 def _blst_library_path() -> Path:
     return Path(os.environ.get(K_PLUGIN_ROOT, BUILD_DIR)) / 'c-kzg-4844/lib/libblst.a'
 
