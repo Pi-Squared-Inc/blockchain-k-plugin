@@ -96,9 +96,10 @@ $(C_KZG_4844)/lib/libckzg.o: $(C_KZG_4844)/src/ckzg.c $(PREFIX)/c-kzg-4844/lib/l
 $(C_KZG_4844)/lib/trusted_setup.o: $(PREFIX)/c-kzg-4844/trusted_setup.cpp
 	$(CXX) $(C_KZG_4844_CXXFLAGS) $< -c -o $@
 
-$(PREFIX)/c-kzg-4844/lib/libckzg.a: $(C_KZG_4844)/lib/libckzg.o $(C_KZG_4844)/lib/trusted_setup.o $(PREFIX)/c-kzg-4844/lib/libblst.a
+$(PREFIX)/c-kzg-4844/lib/libckzg.a: $(C_KZG_4844)/lib/trusted_setup.o $(C_KZG_4844)/lib/libckzg.o
 	mkdir -p $(dir $@)
-	ar r $@ $^
+	ar r $@ $<
+	cp $(C_KZG_4844)/lib/libckzg.o $(dir $@)
 
 .PHONY: c-kzg-4844
 c-kzg-4844: $(PREFIX)/c-kzg-4844/lib/libckzg.a
@@ -153,7 +154,7 @@ plugin: $(PREFIX)/plugin/lib/plugin.a
 # krypto
 # ------
 
-$(PREFIX)/krypto/lib/krypto.a: $(PREFIX)/libff/lib/libff.a $(PREFIX)/libcryptopp/lib/libcryptopp.a $(PREFIX)/blake2/lib/blake2.a $(PREFIX)/plugin/lib/plugin.a $(PREFIX)/c-kzg-4844/lib/libckzg.a $(PREFIX)/c-kzg-4844/lib/libblst.a
+$(PREFIX)/krypto/lib/krypto.a: $(PREFIX)/libff/lib/libff.a $(PREFIX)/libcryptopp/lib/libcryptopp.a $(PREFIX)/blake2/lib/blake2.a $(PREFIX)/plugin/lib/plugin.a $(PREFIX)/c-kzg-4844/lib/libckzg.a
 	$(eval TMP := $(shell mktemp -d))
 	for lib in $^; do                \
 	    (cd $(TMP); ar x $$lib;) \
