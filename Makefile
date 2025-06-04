@@ -96,9 +96,10 @@ $(C_KZG_4844)/lib/libckzg.o: $(C_KZG_4844)/src/ckzg.c $(PREFIX)/c-kzg-4844/lib/l
 $(C_KZG_4844)/lib/trusted_setup.o: $(PREFIX)/c-kzg-4844/trusted_setup.cpp
 	$(CXX) $(C_KZG_4844_CXXFLAGS) $< -c -o $@
 
-$(PREFIX)/c-kzg-4844/lib/libckzg.a: $(C_KZG_4844)/lib/trusted_setup.o
+$(PREFIX)/c-kzg-4844/lib/libckzg.a: $(C_KZG_4844)/lib/trusted_setup.o $(C_KZG_4844)/lib/libckzg.o
 	mkdir -p $(dir $@)
-	ar r $@ $^
+	ar r $@ $<
+	cp $(C_KZG_4844)/lib/libckzg.o $(dir $@)
 
 .PHONY: c-kzg-4844
 c-kzg-4844: $(PREFIX)/c-kzg-4844/lib/libckzg.a

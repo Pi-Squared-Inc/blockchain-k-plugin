@@ -26,6 +26,10 @@ def _source_dir() -> Path:
 
 def _library_path() -> Path:
     return Path(os.environ.get(K_PLUGIN_ROOT, BUILD_DIR)) / 'krypto/lib/krypto.a'
+def _czkg_object_path() -> Path:
+    return Path(os.environ.get(K_PLUGIN_ROOT, BUILD_DIR)) / 'c-kzg-4844/lib/libckzg.o'
+def _blst_library_path() -> Path:
+    return Path(os.environ.get(K_PLUGIN_ROOT, BUILD_DIR)) / 'c-kzg-4844/lib/libblst.a'
 
 
 @pytest.fixture(scope='session')
@@ -41,6 +45,8 @@ def krypto_kompile(kompile: Kompiler) -> Callable[..., Path]:
                 '-lsecp256k1',
                 '-lcrypto',
                 str(_library_path()),
+                str(_czkg_object_path()),
+                str(_blst_library_path()),
             ],
         }
         args = {**default_args, **kwargs}
