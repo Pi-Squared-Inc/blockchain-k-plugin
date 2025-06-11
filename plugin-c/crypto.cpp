@@ -16,6 +16,45 @@
 using namespace CryptoPP;
 using namespace libff;
 
+#ifdef RETH_BUILD
+// Replaces the secp256k1 functions from the system's lib with the ones from the rustsecp256k1 library
+#define secp256k1_context_create rustsecp256k1_v0_10_0_context_create
+#define secp256k1_ecdsa_recoverable_signature_parse_compact \
+  rustsecp256k1_v0_10_0_ecdsa_recoverable_signature_parse_compact
+#define secp256k1_ecdsa_recover rustsecp256k1_v0_10_0_ecdsa_recover
+#define secp256k1_ecdsa_recoverable_signature_serialize_compact \
+  rustsecp256k1_v0_10_0_ecdsa_recoverable_signature_serialize_compact
+#define secp256k1_ec_pubkey_create rustsecp256k1_v0_10_0_ec_pubkey_create
+#define secp256k1_ec_pubkey_serialize rustsecp256k1_v0_10_0_ec_pubkey_serialize
+#define secp256k1_ecdsa_sign_recoverable \
+  rustsecp256k1_v0_10_0_ecdsa_sign_recoverable
+
+extern "C" {
+secp256k1_context *rustsecp256k1_v0_10_0_context_create(unsigned int flags);
+int rustsecp256k1_v0_10_0_ecdsa_recoverable_signature_parse_compact(
+    secp256k1_context *ctx, secp256k1_ecdsa_recoverable_signature *sig,
+    const unsigned char *input64, int recid);
+int rustsecp256k1_v0_10_0_ecdsa_recover(
+    secp256k1_context *ctx, secp256k1_pubkey *pubkey,
+    const secp256k1_ecdsa_recoverable_signature *sig, const unsigned char *msg);
+int rustsecp256k1_v0_10_0_ecdsa_recoverable_signature_serialize_compact(
+    secp256k1_context *ctx, unsigned char *output64, int *recid,
+    const secp256k1_ecdsa_recoverable_signature *sig);
+int rustsecp256k1_v0_10_0_ec_pubkey_create(secp256k1_context *ctx,
+                                           secp256k1_pubkey *pubkey,
+                                           const unsigned char *privkey);
+int rustsecp256k1_v0_10_0_ec_pubkey_serialize(secp256k1_context *ctx,
+                                              unsigned char *output,
+                                              size_t *outputlen,
+                                              const secp256k1_pubkey *pubkey,
+                                              unsigned int flags);
+int rustsecp256k1_v0_10_0_ecdsa_sign_recoverable(
+    secp256k1_context *ctx, secp256k1_ecdsa_recoverable_signature *sig,
+    const unsigned char *msg, const unsigned char *seckey,
+    const secp256k1_nonce_function noncefp, void *ndata);
+}
+#endif
+
 extern "C" {
 
 struct string *hook_KRYPTO_sha512raw(struct string *str) {
