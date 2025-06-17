@@ -22,6 +22,19 @@ extern "C" {
 static void setup(KZGSettings *s) {
   C_KZG_RET ret;
 
+  // This is the functionality of the static function init_settings in
+  // setup/setup.c, used to initialize all fields of s to null / zero.
+  s->roots_of_unity = NULL;
+  s->brp_roots_of_unity = NULL;
+  s->reverse_roots_of_unity = NULL;
+  s->g1_values_monomial = NULL;
+  s->g1_values_lagrange_brp = NULL;
+  s->g2_values_monomial = NULL;
+  s->x_ext_fft_columns = NULL;
+  s->tables = NULL;
+  s->wbits = 0;
+  s->scratch_size = 0;
+
   ret = load_trusted_setup(
       s,
       g1_monomial_bytes,
